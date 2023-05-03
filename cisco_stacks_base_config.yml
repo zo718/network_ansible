@@ -1,0 +1,21 @@
+--- # this playbook is to set up the basic config. 
+
+- name: "Etsy Stacks Base configs"
+  hosts: "cisco_switches"
+  connection: ansible.netcommon.network_cli
+  gather_facts: false
+
+  tasks:
+    - name: "Login Banner config"
+      cisco.ios.ios_banner:
+        banner: login
+        state: present
+        text: |
+          " {{ lookup('file', '~/network_ansible/templates/login_banner.j2') }}"
+
+    - name: "MOTD Banner config"
+      cisco.ios.ios_banner:
+        banner: motd
+        state: present
+        text: |
+          " {{ lookup('file', '~/network_ansible/templates/motd_banner2.j2') }}"

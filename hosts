@@ -1,0 +1,11 @@
+[juniper]
+juniper_sxr.domain.com
+juniper_mx.domain.com
+
+[cisco_switches]
+3rdfloor_stack.domain.com
+4thfloor_stack.domain.com
+5thfloor_stack.domain.com
+
+[local]
+control ansible_connection=local

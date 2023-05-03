@@ -1,0 +1,6 @@
+--- # vars for the juniper borders.
+
+ansible_connection: ansible.netcommon.network_cli
+ansible_network_os: junipernetworks.junos.junos
+ansible_user: superadmin_account
+ansible_password: superadmin_password
