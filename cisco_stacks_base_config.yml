@@ -1,4 +1,4 @@
---- # this playbook is to set up the basic config. 
+---
 
 - name: "Etsy Stacks Base configs"
   hosts: "cisco_switches"
@@ -19,3 +19,34 @@
         state: present
         text: |
           " {{ lookup('file', '~/network_ansible/templates/motd_banner2.j2') }}"
+
+    - name: "L2 vlans in a loop config"
+      cisco.ios.ios_vlans:
+        config:
+        - name: "{{ vlan.name }}"
+          vlan_id: "{{ vlan.id }}"
+      loop: "{{ l2_vlans }}"
+      loop_control:
+        loop_var: vlan
+
+    - name: "This one takes a long time. Interfaces config in a loop"
+      cisco.ios.ios_config:
+        src: "~/network_ansible/templates/access_ports_loop.j2"
+
+    - name: "assert test"
+      ansible.builtin.assert:
+        that:
+          - int.vlan|int in allowed_vlan.ids and int.vlan != 'trunk'
+        fail_msg: "WARNING! Interface {{ int.port }} not configured. Invalid VLAN ID - Integer not found in allowed_vlans."
+        quiet: yes
+      loop: "{{ interfaces }}"
+      loop_control:
+        loop_var: int
+
+    - name: "Check for invalid VLANs ids"
+      ansible.builtin.debug:
+        msg: " WARNING! Invalid VLAN ID for {{ int.port }} Value Not found in allowed_vlans - Skipped"
+      loop: "{{ interfaces }}"
+      loop_control:
+        loop_var: int
+      when: int.vlan|int not in allowed_vlan.ids and int.vlan != 'trunk'
